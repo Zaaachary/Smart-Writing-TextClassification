@@ -36,6 +36,9 @@ def select_task(args):
     if args.task_name == "BERT_MLP":
         return BertForTC, data_processor.Base_Processor
 
+def save_predict(args, logits, predicts):
+    pass
+
 def main(args):
     start = time.time()
     set_seed(args)
@@ -59,10 +62,11 @@ def main(args):
 
     else:
         print(f'loading {args.mission} set')
+        # file = 'test' if args.mission == 'predict' else 'test'
         file = 'target' if args.mission == 'predict' else 'test'
         processor = Processor(args.dataset_dir, file)
         processor.load_swtc()
-        test_dataloader = processor.make_dataloader(tokenizer, args.batch_size, False, 128)
+        test_dataloader = processor.make_dataloader(tokenizer, args.batch_size, False, 128, False)
 
 
     # choose model and initalize controller
@@ -77,18 +81,12 @@ def main(args):
         controller.test(test_dataloader)
 
     elif args.mission == "predict":
-        result, label, predict = controller.test(test_dataloader)
-        content = ''
-        length = len(result)
-        right = 0
-        for i, item in enumerate(tqdm(result)):
-            if predict[i] == label[i]:
-                right += 1
-            content += '{},{},{},{},{},{},{}\n' .format(item[0], item[1], item[2], item[3], item[4], label[i], predict[i])
+        result, predicts = controller.predict(test_dataloader)
+        processor.add_predict(predicts)
+        processor.save_data(args.pred_file_dir)
 
-        logger.info("accuracy is {}".format(right/length))
-        with open(args.pred_file_name, 'w', encoding='utf-8') as f:
-            f.write(content)
+        # with open(args.pred_file_name, 'w', encoding='utf-8') as f:
+        #     f.write(content)
 
     end = time.time()
     logger.info("start in {:.0f}, end in {:.0f}".format(start, end))
@@ -100,7 +98,7 @@ if __name__ == "__main__":
 
     # other param
     parser.add_argument('--task_name', type=str, default='AlbertAttnMerge')
-    parser.add_argument('--mission', type=str, choices=['train','test'])
+    parser.add_argument('--mission', type=str, choices=['train','test','predict'])
     parser.add_argument('--fp16', type=int, default=0)
     parser.add_argument('--gpu_ids', type=str, default='-1')
     parser.add_argument('--print_step', type=int, default=250)
@@ -115,7 +113,7 @@ if __name__ == "__main__":
 
     # path param
     parser.add_argument('--dataset_dir', type=str, default='../DATA')
-    parser.add_argument('--pred_file_name', type=str)       # output of predict file
+    parser.add_argument('--pred_file_dir', type=str)       # output of predict file
     parser.add_argument('--model_save_dir', type=str, default=None)     # 
     parser.add_argument('--PTM_model_vocab_dir', type=str, default=None)
 

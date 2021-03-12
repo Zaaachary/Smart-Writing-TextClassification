@@ -1,6 +1,6 @@
 python CODE\run_task.py^
     --task_name BERT_MLP^
-    --mission test^
+    --mission predict^
     --fp16 0^
     --gpu_ids 0^
     --print_step 100^
@@ -10,6 +10,6 @@ python CODE\run_task.py^
     --warmup_proportion 0.1^
     --weight_decay 0.1^
     --dataset_dir DATA/^
-    --pred_file_name  DATA/result/task_result.json^
+    --pred_file_dir  DATA/result/task_result.json^
     --model_save_dir DATA/result/TCmodel/^
     --PTM_model_vocab_dir D:\CODE\Python\Transformers-Models\bert-base-chinese^

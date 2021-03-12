@@ -17,7 +17,7 @@ class SWTCExample:
         feature = Feature.make_single(self.example_id, tokens, tokenizer, max_seq_len)
         
         return feature, self.label
-    
+
     @classmethod
     def load_from_dict(cls, dict_obj, label2id, max_len):
         '''
@@ -26,8 +26,16 @@ class SWTCExample:
         title = dict_obj['title']
         content = dict_obj['content'][:max_len]
         example_id = dict_obj['id']
-        topics = label2id[dict_obj['topics']]
+
+        if dict_obj['topics'] not in label2id.keys():
+            # 未分类
+            topics = -1
+        else:
+            topics = label2id[dict_obj['topics']]
         
         text = f" {title} [SEP] {content} "
 
         return cls(example_id, topics, text)
+    
+    def __repr__(self) -> str:
+        return self.text + str(self.label)

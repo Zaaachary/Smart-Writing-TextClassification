@@ -28,7 +28,6 @@ class TextClassification:
             model_dir = self.config.PTM_model_vocab_dir
         else:
             model_dir = self.config.model_save_dir
-
         print('init_model', model_dir)
         model = ModelClass.from_pretrained(model_dir)
         print(model)
@@ -62,21 +61,19 @@ class TextClassification:
 
     def predict(self, dataloader):
         result = []
-        idx = []
-        labels = []
         predicts = []
 
+        self.model.eval()
         for batch in tqdm(dataloader):
-            self.model.eval()
             with torch.no_grad():
                 # batch = map(lambda x:x.to(self.device), batch)
-                ret = self.model.forward(batch[0].to(self.device),batch[1].to(self.device),batch[2].to(self.device),batch[3].to(self.device))
-                idx.extend(batch[0].cpu().numpy().tolist())
-                result.extend(ret.cpu().numpy().tolist())
-                labels.extend(batch[4].numpy().tolist())
-                predicts.extend(torch.argmax(ret, dim=1).cpu().numpy().tolist())
+                batch = list(map(lambda x:x.to(self.device), batch[:-1]))
+                labels, logits = self.model.predict(*batch)
 
-        return idx, result, labels, predicts
+                result.extend(logits.cpu().numpy().tolist())
+                predicts.extend(labels.cpu().numpy().tolist())
+
+        return result, predicts
 
     @classmethod
     def load_from_model(cls, config, ConfigClass, ModelClass):

@@ -6,6 +6,7 @@
 @Dscpt   :   分类模型
 """
 
+import pdb
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -41,17 +42,23 @@ class BertForTC(BertPreTrainedModel):
         pooler_output = outputs.pooler_output
 
         logits = self.classifier(pooler_output)
-        loss = F.cross_entropy(logits, labels)      # get the CELoss
 
-        with torch.no_grad():
-            logits = F.softmax(logits, dim=1)       # get the score
-            predicts = torch.argmax(logits, dim=1)  # find the result
-            right_num = torch.sum(predicts == labels)
-
-        return loss, right_num
+        if labels is not -1:
+            loss = F.cross_entropy(logits, labels)      # get the CELoss
+            with torch.no_grad():
+                logits = F.softmax(logits, dim=1)       # get the score
+                predicts = torch.argmax(logits, dim=1)  # find the result
+                right_num = torch.sum(predicts == labels)
+            return loss, right_num
+        else:
+            # 无标签数据
+            logits = F.softmax(logits, dim=1)
+            predicts = torch.argmax(logits, dim=1)
+            return predicts, logits
+            
 
     def predict(self, input_ids, attention_mask, token_type_ids):
         """
-        return: [B, 22]
+        return: 
         """
-        return self.forward(input_ids, attention_mask, token_type_ids)
+        return self.forward(input_ids, attention_mask, token_type_ids, -1)
