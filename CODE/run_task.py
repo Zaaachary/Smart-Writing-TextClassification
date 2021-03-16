@@ -13,8 +13,6 @@ import logging; logging.getLogger("transformers").setLevel(logging.WARNING)
 logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-import numpy as np
-import torch
 from tqdm import tqdm
 from transformers import AlbertTokenizer, ElectraTokenizerFast, BertTokenizer, BertConfig
 
@@ -104,7 +102,8 @@ if __name__ == "__main__":
     parser.add_argument('--print_step', type=int, default=250)
     parser.add_argument('--save_last', type=bool, default=True)
     parser.add_argument('--seed', type=int, default=42)
-    # train param
+    
+    # hyper param
     parser.add_argument('--lr', type=float, default=2e-5)
     parser.add_argument('--batch_size', type=int, default=4)
     parser.add_argument('--num_train_epochs', type=int, default=5)

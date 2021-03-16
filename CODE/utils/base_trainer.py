@@ -64,13 +64,6 @@ class BaseTrainer:
                     self._report(self.train_record, mode='single')
                     self.train_record.init()
 
-                    # if not save_last and (dev_record.avg()[0] < best_dev_loss):
-                    #     best_dev_loss = dev_record.avg()[0]
-                    #     self.save_model()
-                    # print("current_acc is {}".format(current_acc))
-                    # print("best_dev_acc is {}".format(best_dev_acc))
-                    # self.save_model()
-
             # 要放在epoch 一层
             dev_record = self.evaluate(dev_dataloader)
             current_acc = dev_record.list()[1]
