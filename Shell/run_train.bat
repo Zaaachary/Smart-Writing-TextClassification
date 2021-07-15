@@ -12,7 +12,6 @@ python CODE\run_task.py^
     --weight_decay 0.1^
     ^
     --dataset_dir DATA/^
-    --pred_file_name  DATA/result/task_result.json^
     --model_save_dir DATA/result/TCmodel/^
     --PTM_model_vocab_dir D:\CODE\Python\Transformers-Models\bert-base-chinese^
     --model_save_dir DATA/result/TCmodel/
